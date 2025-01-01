@@ -29,6 +29,7 @@ jobs:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       HF_REPO: ${{ secrets.HF_REPO }}
       HF_USER: ${{ secrets.HF_USER }}
+      TZ: Asia/Shanghai
     steps:
       - name: 检测仓库
         uses: actions/checkout@v4
@@ -53,6 +54,157 @@ jobs:
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+
+      - name: 记录部署日志
+        run: |
+          mkdir -p docs
+          export TZ=Asia/Shanghai
+          START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          echo "开始部署..."
+          END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          START_SECONDS=$(date -d "$START_TIME" +%s)
+          END_SECONDS=$(date -d "$END_TIME" +%s)
+          DURATION=$((END_SECONDS - START_SECONDS))
+          if [ $DURATION -lt 60 ]; then
+            DURATION_TEXT="${DURATION}秒"
+          else
+            MINUTES=$((DURATION / 60))
+            SECONDS=$((DURATION % 60))
+            DURATION_TEXT="${MINUTES}分${SECONDS}秒"
+          fi
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          cat > docs/deploy_log_$(date '+%Y%m%d').html << EOF
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+              <meta charset="UTF-8">
+              <title>部署日志 - $(date '+%Y-%m-%d')</title>
+              <style>
+                  body { 
+                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                      margin: 20px;
+                      color: #333;
+                      min-height: 100vh;
+                      position: relative;
+                      padding-bottom: 60px;
+                  }
+                  .log-entry { 
+                      background: #f8f9fa;
+                      padding: 20px;
+                      margin: 15px 0;
+                      border-radius: 8px;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                  }
+                  .success { color: #28a745; }
+                  .duration { color: #0066cc; }
+                  h1 { color: #2c3e50; }
+                  .timestamp { color: #666; }
+                  .footer {
+                      position: absolute;
+                      bottom: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 60px;
+                      line-height: 60px;
+                      text-align: center;
+                      background-color: #f8f9fa;
+                      border-top: 1px solid #e9ecef;
+                  }
+                  .footer a {
+                      color: #0366d6;
+                      text-decoration: none;
+                  }
+                  .footer a:hover {
+                      text-decoration: underline;
+                  }
+              </style>
+          </head>
+          <body>
+              <h1>部署日志</h1>
+              <div class="log-entry">
+                  <p><strong>开始时间:</strong> <span class="timestamp">${START_TIME}</span></p>
+                  <p><strong>结束时间:</strong> <span class="timestamp">${END_TIME}</span></p>
+                  <p><strong>执行时长:</strong> <span class="duration">${DURATION_TEXT}</span></p>
+                  <p><strong>工作流程:</strong> <a href="${WORKFLOW_URL}" target="_blank">查看详情</a></p>
+                  <p><strong>提交SHA:</strong> ${{ github.sha }}</p>
+                  <p><strong>触发事件:</strong> ${{ github.event_name }}</p>
+                  <p><strong>状态:</strong> <span class="success">✓ 成功</span></p>
+              </div>
+              <div class="footer">
+                  Powered By <a href="https://linux.do" target="_blank">LINUX DO</a>
+              </div>
+          </body>
+          </html>
+          EOF
+          if [ ! -f docs/index.html ]; then
+            cat > docs/index.html << EOF
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+              <meta charset="UTF-8">
+              <title>部署日志索引</title>
+              <style>
+                  body { 
+                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                      margin: 20px;
+                      color: #333;
+                      min-height: 100vh;
+                      position: relative;
+                      padding-bottom: 60px;
+                  }
+                  .log-list { 
+                      list-style: none;
+                      padding: 0;
+                  }
+                  .log-list li { 
+                      margin: 10px 0;
+                      padding: 10px;
+                      background: #f8f9fa;
+                      border-radius: 4px;
+                      transition: background-color 0.2s;
+                  }
+                  .log-list li:hover {
+                      background: #e9ecef;
+                  }
+                  .log-list a { 
+                      text-decoration: none;
+                      color: #0366d6;
+                      display: block;
+                  }
+                  h1 { color: #2c3e50; }
+                  .footer {
+                      position: absolute;
+                      bottom: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 60px;
+                      line-height: 60px;
+                      text-align: center;
+                      background-color: #f8f9fa;
+                      border-top: 1px solid #e9ecef;
+                  }
+                  .footer a {
+                      color: #0366d6;
+                      text-decoration: none;
+                  }
+                  .footer a:hover {
+                      text-decoration: underline;
+                  }
+              </style>
+          </head>
+          <body>
+              <h1>部署日志索引</h1>
+              <ul class="log-list">
+          EOF
+          fi
+          sed -i "/<ul class=\"log-list\">/a \        <li><a href=\"deploy_log_$(date '+%Y%m%d').html\">$(date '+%Y-%m-%d') 部署日志 - ${DURATION_TEXT}</a></li>" docs/index.html
+          echo '              </ul>' >> docs/index.html
+          echo '              <div class="footer">' >> docs/index.html
+          echo '                  Powered By <a href="https://linux.do" target="_blank">LINUX DO</a>' >> docs/index.html
+          echo '              </div>' >> docs/index.html
+          echo '          </body>' >> docs/index.html
+          echo '          </html>' >> docs/index.html
+
       - name: 设置Git并推送到空间
         run: |
           git init --initial-branch=main
