@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>部署日志索引</title>
+    <title>部署日志 - 2025-01-07</title>
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -28,26 +28,19 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #eee;
         }
-        .log-list {
-            list-style: none;
-            padding: 0;
-        }
-        .log-list li {
-            margin: 10px 0;
-            padding: 15px;
+        .log-entry {
             background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .log-list li:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+        .log-entry p {
+            margin: 10px 0;
         }
-        .log-list a {
-            text-decoration: none;
-            color: #0366d6;
-            display: block;
-        }
+        .success { color: #28a745; }
+        .duration { color: #0066cc; }
+        .timestamp { color: #666; }
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -70,19 +63,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>部署日志索引</h1>
-        <ul class="log-list">
-        <li><a href="deploy_log_20250107.html">2025-01-07 部署日志</a></li>
-        <li><a href="deploy_log_20250106.html">2025-01-06 部署日志</a></li>
-        <li><a href="deploy_log_20250105.html">2025-01-05 部署日志</a></li>
-        <li><a href="deploy_log_20250104.html">2025-01-04 部署日志</a></li>
-        <li><a href="deploy_log_20250103.html">2025-01-03 部署日志</a></li>
-        <li><a href="deploy_log_20250102.html">2025-01-02 部署日志</a></li>
-        <li><a href="deploy_log_20250101.html">2025-01-01 部署日志</a></li>
-                  </ul>
-                  <div class="footer">
-                      <p><a href="https://linux.do" target=_blank>LINUX DO</a></p>
-                  </div>
-              </div>
-          </body>
-          </html>
+        <h1>部署日志</h1>
+        <div class="log-entry">
+            <p><strong>部署时间:</strong> <span class="timestamp">2025-01-07 01:10:14</span></p>
+            <p><strong>分支:</strong> main</p>
+            <p><strong>提交SHA:</strong> a5bb9a37c0b2912097a4e63e976e1d06938e3c44</p>
+            <p><strong>触发事件:</strong> schedule</p>
+            <p><strong>工作流程:</strong> <a href="https://github.com/lmtudio/BingPicAPI/actions/runs/12636936460" target="_blank">查看详情</a></p>
+            <p><strong>状态:</strong> <span class="success">✓ 成功</span></p>
+        </div>
+        <div class="footer">
+            <p><a href="https://linux.do" target="_blank">LINUX DO</a></p>
+        </div>
+    </div>
+</body>
+</html>
